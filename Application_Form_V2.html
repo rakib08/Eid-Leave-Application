@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leave Application Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    h2 {
+      text-align: center;
+    }
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #0a66c2;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #004080;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Eid-Ul-Adha Leave Application Generator</h2>
+
+<form id="applicationForm">
+  <label for="date">Application Date:</label>
+  <input type="date" id="date" required>
+
+  <label for="fromDate">Leave From (date):</label>
+  <input type="date" id="fromDate" required>
+
+  <label for="toDate">Leave To (date):</label>
+  <input type="date" id="toDate" required>
+
+  <label for="recipientTitle">Recipient Title:</label>
+  <select id="recipientTitle" required>
+    <option value="" disabled selected>Select title</option>
+    <option value="Sir">Sir</option>
+    <option value="Madam">Madam</option>
+  </select>
+
+  <label for="fullName">Full Name:</label>
+  <input type="text" id="fullName" required>
+
+  <label for="studentId">Student ID:</label>
+  <input type="text" id="studentId" required>
+
+  <label for="courseName">Course Name:</label>
+  <input type="text" id="courseName" required>
+
+  <label for="departmentName">Department Name:</label>
+  <input type="text" id="departmentName" required>
+
+  <label for="section">Section:</label>
+  <input type="text" id="section" required>
+
+  <button type="button" onclick="generatePDF()">Generate PDF</button>
+</form>
+
+<script>
+  // Helper to format date as DD-MM-YYYY
+  function formatDateDMY(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const dateRaw = document.getElementById("date").value;
+    const fromDateRaw = document.getElementById("fromDate").value;
+    const toDateRaw = document.getElementById("toDate").value;
+    const recipientTitle = document.getElementById("recipientTitle").value;
+    const fullName = document.getElementById("fullName").value;
+    const studentId = document.getElementById("studentId").value;
+    const courseName = document.getElementById("courseName").value;
+    const departmentName = document.getElementById("departmentName").value;
+    const section = document.getElementById("section").value;
+
+    // Format dates to DD-MM-YYYY
+    const date = formatDateDMY(dateRaw);
+    const fromDate = formatDateDMY(fromDateRaw);
+    const toDate = formatDateDMY(toDateRaw);
+
+    const content = `
+Date: ${date}
+
+To
+The Course Instructor
+${departmentName}
+American International University-Bangladesh (AIUB)
+Dhaka
+
+Subject: Application for Being Unable to Join Classes Due to Advanced Ticketing for the Vacation of Eid-Ul-Adha
+
+Respected ${recipientTitle},
+
+With due respect, I would like to inform you that I will be unable to attend classes from ${fromDate} to ${toDate} as I have already booked my travel tickets in advance for the Eid-Ul-Adha vacation. The tickets were purchased before the official vacation notice was published, and unfortunately, they are non-refundable and non-changeable.
+
+I sincerely apologize for any inconvenience caused due to my absence during this period. I assure you that I will take the necessary steps to cover any missed lessons and class activities.
+
+Therefore, I humbly request you to consider my situation and grant me leave for the mentioned days. Your kind understanding in this regard will be highly appreciated.
+
+Thank you for your time and consideration.
+
+Yours faithfully,
+${fullName}
+ID: ${studentId}
+Course: ${courseName}
+Section: ${section}
+American International University-Bangladesh (AIUB)
+    `;
+
+    doc.setFont("Times", "Normal");
+    doc.setFontSize(12);
+    doc.text(content, 20, 20, { maxWidth: 170, lineHeightFactor: 1.6 });
+
+    doc.save("Eid_Leave_Application.pdf");
+  }
+</script>
+
+</body>
+</html>
